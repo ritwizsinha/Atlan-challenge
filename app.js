@@ -16,6 +16,7 @@ db.once('open', () => {
     console.log("Connected successfully")
 });
 
+const PORT = process.env.PORT || 3000
 const app = express();
 
 app.use(cors());
@@ -27,6 +28,6 @@ app.use((err,req,res,next)=>{
 	console.error(err)
 	res.send({err:err.message})
 })
-app.listen(3000,'localhost', () => {
-    console.log("Connection successful to  3000");
+app.listen(PORT,'localhost', () => {
+    console.log(`Connection successful to ${PORT}`);
 });
