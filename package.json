@@ -1,7 +1,7 @@
 {
   "name": "atlan-challenge",
   "version": "1.0.0",
-  "description": "ksa;ldfjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj const http = require('http'); const server = http.createServer(); const http = require('http'); const server = http.createServer(); const http = require('http'); const server = http.createServer(); const http = require('http'); const server = http.createServer(); const http = require('http'); const server = http.createServer(); const http = require('http'); const server = http.createServer(); const http = require('http'); const server = http.createServer();",
+  "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node app"
@@ -10,7 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "csv-parser": "^2.3.3",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.6",
+    "neat-csv": "^5.2.0",
+    "objects-to-csv": "^1.3.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
