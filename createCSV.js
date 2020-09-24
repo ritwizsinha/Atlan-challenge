@@ -1,5 +1,6 @@
 const ObjectsToCsv = require('objects-to-csv');
-for(let i = 0;i<10;i++) {
+const data = [];
+for(let i = 0;i<1e5;i++) {
     data.push({
         name: i.toString(),
         job: i.toString(),

@@ -33,11 +33,24 @@ This is a internship task for a Backend Developer Internship where the task give
 - The task has 3 states RUNNING, PAUSED AND ENDED.
 - When we start the upload/export the task goes to RUNNING state (represented as 0, implemented kind of like enums)
 - When the task is paused it goes to paused state (represented  as 1, implemented kind of like enums)
-- When the task (represented as absence of that task)
+- When the task is ended (represented as absence of that task)
 - Everytime we upload a document to the database we check the state of task. If it is RUNNING, we continue the process, if it is paused then it exits. 
 - When the task is resumed it goes from PAUSED to RUNNING state and the document upload starts again. 
 - If the task is terminated then the document uploads of current have to be rolled back. 
 
 ## Implementation
 - As the task variable is accessed multiple times it was better to store it in cache than in the database. Thus redis was used for storing the task. Along with task another variable rowCount is stored in cache which is further used to rollback changes to the database whenever the uploads are terminated. 
-  
+- For uploading of csv each row of CSV is taken one by one and uploaded to database. 
+- For exporting each row is taken from database and added to a csv which is sent to the user.
+- For rolling back changes. X operations are made where to delete the last X entries from the database. Here X is the rowCount stored in cache. A transaction might be a better solution to this but was not supported in mongoose without replica sets. 
+
+## API
+
+- As this is only a test for uploads resume/pause/stop etc, the upload is currently specified as a get request and doing a request starts uploading the file 'test.csv' present on server to the database
+- GET 
+  - /upload/start : Starts the upload of the 'test.csv' to the database
+  - /upload/pause : Pauses the upload of 'test.csv'
+  - /upload/resume: Resumes the upload of 'test.csv'
+  - /upload/stop  : Stops the upload of 'test.csv'
+  - /export/start : Starts export from the server
+  - /export/stop  : Stops the export from the server

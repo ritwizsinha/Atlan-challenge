@@ -7,6 +7,7 @@ const  { startExport, stopExport } = require('./export');
 router.get("/upload/start", async (req, res, next) => {
     try {
         const msg = await addTaskAndStartUpload();
+        res.status(200)
         res.send(msg);
     } catch(err) {
         next(err);
@@ -16,6 +17,7 @@ router.get("/upload/start", async (req, res, next) => {
 router.get("/upload/pause", async (req, res, next) => {
     try {
         const msg = await pauseUpload();
+        res.status(200)
         res.send(msg);
     } catch (err) {
         next(err)
@@ -26,6 +28,7 @@ router.get("/upload/pause", async (req, res, next) => {
 router.get("/upload/resume", async (req, res, next) => {
     try {
         const msg = await resumeTheUpload();
+        res.status(200)
         res.send(msg);
     } catch (err) {
         next(err)
@@ -36,6 +39,7 @@ router.get("/upload/resume", async (req, res, next) => {
 router.get("/upload/stop", async (req, res, next) => {
     try {
         const msg = await stopPausedTask();
+        res.status(200)
         res.send(msg);
     } catch (err) {
         next(err)
@@ -47,9 +51,12 @@ router.get('/export/start', async (req, res, next) => {
         const msg = await startExport();
         if(msg === "Export Done") {
             console.log("Goes here again");
+            res.status(200)
             res.sendFile(`${__dirname}/data.csv`);
-        } else
-        res.send(msg);
+        } else{ 
+            res.status(200);
+            res.send(msg);
+        }
     } catch (e) {
         next(e);
     }
@@ -58,15 +65,11 @@ router.get('/export/start', async (req, res, next) => {
 router.get('/export/stop', async (req, res, next) => {
     try {   
         const msg = await stopExport();
+        res.status(200);
         res.send(msg);
     } catch (e) {
         next(e);
     }
-})
-
-router.get('/', (req, res, next) => {
-    console.log("Request received"); 
-    res.sendFile(__dirname + '/index.html');
 })
 
 module.exports = {
