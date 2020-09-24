@@ -3,8 +3,8 @@ const redis = require('redis');
 
 const { taskState } = require('../constants/states');
 
-const REDIS_PORT = process.env.PORT || 6379;
-const redis_client = redis.createClient(REDIS_PORT);
+// const REDIS_PORT = process.env.PORT || 6379;
+const redis_client = redis.createClient(process.env.REDIS_URL);
 redis_client.on("error", function(error) {
     console.error(error);
 });

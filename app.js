@@ -2,16 +2,14 @@ const express = require('express');
 const cors  = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const redis = require('redis');
 
 const { MONGO_URI } = require('./constants/urls');
 const { router } = require('./routes');
 
-mongoose.connect(MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true});
-const db = mongoose.connection;
-db.once('open', () => {
-    console.log("Connected successfully")
+mongoose.connect("mongodb://mongo:27017/atlan").then(() => {
+    console.log("Connected Successfuly");
 });
+const db = mongoose.connection;
 
 const PORT = process.env.PORT || 3000;
 
