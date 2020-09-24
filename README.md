@@ -20,3 +20,24 @@ This is a internship task for a Backend Developer Internship where the task give
 - MongoDB used as a sample database for storing users. 
 - Redis used to store the task state . A task is defined as initiation of an upload/export process and it ends when the upload/export is complete or is terminated.
 - CSV is created and read using objects-to-csv and neat-csv
+
+## Technologies used
+- Node for backend code in express framework
+- MongoDB for Database using mongoose package
+- Redis for task management using redis package
+- Neat-csv , objects-to-csv for csv read and create
+
+## Architecture
+
+- A task is defined as the starting of an upload/export and is said to be ended when it is either terminated or is completed.
+- The task has 3 states RUNNING, PAUSED AND ENDED.
+- When we start the upload/export the task goes to RUNNING state (represented as 0, implemented kind of like enums)
+- When the task is paused it goes to paused state (represented  as 1, implemented kind of like enums)
+- When the task (represented as absence of that task)
+- Everytime we upload a document to the database we check the state of task. If it is RUNNING, we continue the process, if it is paused then it exits. 
+- When the task is resumed it goes from PAUSED to RUNNING state and the document upload starts again. 
+- If the task is terminated then the document uploads of current have to be rolled back. 
+
+## Implementation
+- As the task variable is accessed multiple times it was better to store it in cache than in the database. Thus redis was used for storing the task. Along with task another variable rowCount is stored in cache which is further used to rollback changes to the database whenever the uploads are terminated. 
+  
