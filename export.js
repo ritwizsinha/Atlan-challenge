@@ -11,15 +11,18 @@ const exportFromDatabaseToCsv = (startPoint, fileName) => {
   return new Promise(async (resolve, reject) => {
     try {
       const size = await getUserCount();
+      if(isNaN(size)) throw new Error("The size is not a number");
       for(let i = startPoint-1;i<size;i++) {
         const runningTask = await getRunningTask();
+        console.log(runningTask);
         if (!runningTask) { 
+          console.log("Export ended");
           await destroyExportFile();
           resolve("export ended");
         }
         takeTime(3e9);
         const data = await getNthInSortedUser(i);
-        await incrementTaskRowCount(runningTask);
+        await incrementTaskRowCount();
         new ObjectsToCsv([data[0].object]).toDisk(`${__dirname}/${fileName}`, {append: true});
       }
       await endRunningTask();

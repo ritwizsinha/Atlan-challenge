@@ -45,10 +45,12 @@ router.get("/upload/stop", async (req, res, next) => {
 router.get('/export/start', async (req, res, next) => {
     try {
         const msg = await startExport();
-        if(msg === "Export Done") res.sendFile('/data.csv', {root: __dirname});
+        if(msg === "Export Done") {
+            console.log("Goes here again");
+            res.sendFile(`${__dirname}/data.csv`);
+        } else
         res.send(msg);
     } catch (e) {
-        console.log("this gets trigerred");
         next(e);
     }
 })

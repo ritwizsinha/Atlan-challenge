@@ -18,7 +18,7 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
                                         if (counter <= skipLinesCount) continue;
                                         const runningTask = await getRunningTask();
                                         if (runningTask) {
-                                                timeTakingLoop(2e9);    
+                                                timeTakingLoop(3e9);    
                                                 await addUser(row, runningTask);
                                         }
                                         else {
@@ -32,7 +32,6 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
                         await endRunningTask();
                         resolve("Done completely");
                 } catch(err) {
-                        await endRunningTask();
                         reject(err);
                 }
         })
@@ -65,7 +64,8 @@ const pauseUpload = () => {
 const resumeTheUpload = () => {
         return new Promise(async(resolve, reject) => {
                 try {
-                        const {rowCount} = await getSkipLinesCount();
+                        const rowCount = await getSkipLinesCount();
+                        console.log("RowCount: ", rowCount);
                         await runPausedTask();
                         const msg = await addPipedCsvToDatabase(rowCount, 'test.csv');
                         resolve(msg);
@@ -79,8 +79,8 @@ const resumeTheUpload = () => {
 const stopPausedTask = () => {
         return new Promise(async (resolve, reject) => {
                 try {
-                        const {rowCount} = await getSkipLinesCount();
-                        if(rowCount) {
+                        const rowCount = Number(await getSkipLinesCount());
+                        if (rowCount) {
                                 await rollbackNAddedUsers(rowCount);
                                 await endPausedTask();
                                 resolve()

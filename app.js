@@ -3,9 +3,7 @@ const cors  = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const redis = require('redis');
-const { userModel } = require('./models/users');
-const { uploadState }= require('./constants/states');
-const { start } = require('repl');
+
 const { MONGO_URI } = require('./constants/urls');
 const { router } = require('./routes');
 
@@ -15,10 +13,10 @@ db.once('open', () => {
     console.log("Connected successfully")
 });
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
+
 
 const app = express();
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

@@ -1,67 +1,108 @@
-const { taskState } = require('../constants/states');
-const { taskModel } = require('../models/tasks');
+const { promisify } = require('util')
+const redis = require('redis');
 
+const { taskState } = require('../constants/states');
+
+const REDIS_PORT = process.env.PORT || 6379;
+const redis_client = redis.createClient(REDIS_PORT);
+redis_client.on("error", function(error) {
+    console.error(error);
+});
+
+const get = promisify(redis_client.get).bind(redis_client);
+const flushAll = promisify(redis_client.flushall).bind(redis_client);
+const setex = promisify(redis_client.setex).bind(redis_client);
+const exists = promisify(redis_client.exists).bind(redis_client);
+const set = promisify(redis_client.set).bind(redis_client);
+
+const task = "Task";
+const rowCount = "RowCount";
 const getRunningTask = async () => {
-  return await taskModel.findOne({status: taskState.RUNNING}).exec();
+    if(await exists(task)) {
+      const status = Number(await get(task));
+      if(status === taskState.RUNNING) {
+       return await get(rowCount);
+      }
+    } 
+    throw new Error("No running task");
 }
 
 const endRunningTask = async () => {
-  const runningTask = await getRunningTask();
-  console.log(runningTask);
-  if(runningTask) {
-    await taskModel.deleteOne({status: taskState.RUNNING}).exec();
-    return;
+  if(await exists(task)) {
+      const status = Number(await get(task));
+      if(status === taskState.RUNNING) {
+        await flushAll();
+        return ;
+      }
   }
-  throw new Error("No running task exists");
+    throw new Error("No Running Task");
 }
 
 const endPausedTask = async () => {
-  const pausedTask = await getPausedTask();
-  if(pausedTask) {
-    await taskModel.findOneAndDelete({status: taskState.PAUSED}).exec();
-    return;
+  if(await exists(task)) {
+    const status = Number(await get(task));
+    if(status === taskState.PAUSED) {
+      await flushAll();
+      return;
+   }
   }
-  throw new Error("No Paused Task found");
+  throw new Error("No Paused Task");
 }
 const getPausedTask = async () => {
-  return await taskModel.findOne({status: taskState.PAUSED}).exec();
+  if(await exists(task)) {
+    const status = Number(await get(task));
+    if(status === taskState.PAUSED) {
+      return await get(rowCount);
+    }
+  }
+  throw new Error("No Paused Task");
 }
 const runPausedTask = async () => {
-  const pausedTask = await getPausedTask();
-  if(pausedTask) {
-    await taskModel.findOneAndUpdate({status: taskState.PAUSED}, {$set:{status: taskState.RUNNING}}).exec();
-    return;
+  if(await exists(task)) {
+    const status = Number(await get(task));
+    if(status === taskState.PAUSED) {
+     await set(task,taskState.RUNNING);
+      return;
+   }
   }
-  throw new Error("No Paused Task found");
+  throw new Error("No Paused Task");
 }
 
 const pauseRunningTask = async () => {
-  const runningTask = await getRunningTask();
-  if(runningTask) {
-    await taskModel.findOneAndUpdate({status: taskState.RUNNING}, {$set: {status: taskState.PAUSED}}).exec();
-    return;
+  if(await exists(task)) {
+    const status = Number(await get(task));
+    if(status === taskState.RUNNING) {
+      await set(task, taskState.PAUSED);
+      return;
+    }
   }
   throw new Error("No running task exists");
 }
 
 const addTask = async () => {
-  await taskModel.create({
-          status: taskState.RUNNING,
-          rowCount: 0
-  })
+  try {
+      await setex(task, 3600, taskState.RUNNING);
+      await setex(rowCount, 3600, 0);
+    } catch(err) {
+      console.log(err);
+    }
 }
 
 
 const getSkipLinesCount = async () => {
-  const pausedTask = await getPausedTask();
-  if(pausedTask)
-    return await taskModel.findOne({status: taskState.PAUSED}, {rowCount:1, _id: 0}).exec();
+  if(exists(task)) {
+    const status = Number(await get(task));
+    if(status === taskState.PAUSED)
+    return await get(rowCount);
+  }
   throw new Error("No Paused Task found");
-
 }
 
-const incrementTaskRowCount = async (runningTask) => {
-  return await taskModel.updateOne({_id: runningTask._id},{$set: {rowCount: (runningTask.rowCount +1)}}).exec();
+const incrementTaskRowCount = async () => {
+  if(await exists(rowCount)) {
+    const size = Number(await get(rowCount));
+    await set(rowCount,size + 1);
+  }
 }
 module.exports = {
   getRunningTask,

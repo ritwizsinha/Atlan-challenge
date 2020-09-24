@@ -2,6 +2,7 @@ const { incrementTaskRowCount } = require('./tasks');
 const { userModel } = require('../models/users');
 
 const rollbackNAddedUsers = async (n) => {
+  if(isNaN(n)) throw new Error("Entered value should be number");
   const data =  await  userModel.find().sort({timestamp:-1}).limit(n);
   for(let i=0;i<data.length;i++) {
           const {_id} = data[i];
@@ -9,9 +10,9 @@ const rollbackNAddedUsers = async (n) => {
   }
 }
 
-const addUser = async (obj, runningTask) => {
+const addUser = async (obj) => {
   console.log(obj);
-  await incrementTaskRowCount(runningTask);
+  await incrementTaskRowCount();
   return await userModel.create({
           object: obj
   })
