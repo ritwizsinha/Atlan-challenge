@@ -79,11 +79,13 @@ const resumeTheUpload = () => {
 const stopPausedTask = () => {
         return new Promise(async (resolve, reject) => {
                 try {
-                        const data = await getSkipLinesCount();
-                        console.log(data);
-                        await rollbackNAddedUsers(data.rowCount);
-                        await endPausedTask();
-                        resolve()
+                        const {rowCount} = await getSkipLinesCount();
+                        if(rowCount) {
+                                await rollbackNAddedUsers(rowCount);
+                                await endPausedTask();
+                                resolve()
+                        } 
+                        reject("No paused task found");
                 } catch(err) {
                         reject(err);
                 }

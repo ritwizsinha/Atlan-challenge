@@ -17,7 +17,16 @@ const addUser = async (obj, runningTask) => {
   })
 }
 
+const getUserCount = async () => {
+  return await userModel.countDocuments().exec();
+}
+
+const getNthInSortedUser = async (n) => {
+  return await userModel.find().sort({timestamp: 1}).skip(n).limit(1);
+}
 module.exports = {
   rollbackNAddedUsers,
-  addUser
+  addUser, 
+  getUserCount,
+  getNthInSortedUser
 }

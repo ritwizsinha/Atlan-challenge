@@ -6,21 +6,42 @@ const getRunningTask = async () => {
 }
 
 const endRunningTask = async () => {
-  await taskModel.deleteOne({status: taskState.RUNNING}).exec();
+  const runningTask = await getRunningTask();
+  console.log(runningTask);
+  if(runningTask) {
+    await taskModel.deleteOne({status: taskState.RUNNING}).exec();
+    return;
+  }
+  throw new Error("No running task exists");
 }
 
 const endPausedTask = async () => {
-  await taskModel.findOneAndDelete({status: taskState.PAUSED}).exec();
+  const pausedTask = await getPausedTask();
+  if(pausedTask) {
+    await taskModel.findOneAndDelete({status: taskState.PAUSED}).exec();
+    return;
+  }
+  throw new Error("No Paused Task found");
 }
 const getPausedTask = async () => {
   return await taskModel.findOne({status: taskState.PAUSED}).exec();
 }
 const runPausedTask = async () => {
-  await taskModel.findOneAndUpdate({status: taskState.PAUSED}, {$set:{status: taskState.RUNNING}}).exec();
+  const pausedTask = await getPausedTask();
+  if(pausedTask) {
+    await taskModel.findOneAndUpdate({status: taskState.PAUSED}, {$set:{status: taskState.RUNNING}}).exec();
+    return;
+  }
+  throw new Error("No Paused Task found");
 }
 
 const pauseRunningTask = async () => {
-  await taskModel.findOneAndUpdate({status: taskState.RUNNING}, {$set: {status: taskState.PAUSED}}).exec();
+  const runningTask = await getRunningTask();
+  if(runningTask) {
+    await taskModel.findOneAndUpdate({status: taskState.RUNNING}, {$set: {status: taskState.PAUSED}}).exec();
+    return;
+  }
+  throw new Error("No running task exists");
 }
 
 const addTask = async () => {
@@ -32,7 +53,11 @@ const addTask = async () => {
 
 
 const getSkipLinesCount = async () => {
-  return await taskModel.findOne({status: taskState.PAUSED}, {rowCount:1, _id: 0}).exec();
+  const pausedTask = await getPausedTask();
+  if(pausedTask)
+    return await taskModel.findOne({status: taskState.PAUSED}, {rowCount:1, _id: 0}).exec();
+  throw new Error("No Paused Task found");
+
 }
 
 const incrementTaskRowCount = async (runningTask) => {
