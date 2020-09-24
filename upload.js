@@ -53,9 +53,8 @@ const pauseUpload = () => {
         return new Promise(async (resolve, reject) => {
                 try {
                         await pauseRunningTask();
-                        resolve("paused");
+                        resolve("Paused");
                 } catch(err) {
-                        console.log("Error happened");
                         reject(err);
                 }
         })
@@ -70,7 +69,6 @@ const resumeTheUpload = () => {
                         const msg = await addPipedCsvToDatabase(rowCount, 'test.csv');
                         resolve(msg);
                 } catch(err) {
-                        console.log("Error happened");
                         reject(err);
                 } 
         })
@@ -83,7 +81,7 @@ const stopPausedTask = () => {
                         if (rowCount) {
                                 await rollbackNAddedUsers(rowCount);
                                 await endPausedTask();
-                                resolve()
+                                resolve("Task stopped successfully");
                         } 
                         reject("No paused task found");
                 } catch(err) {

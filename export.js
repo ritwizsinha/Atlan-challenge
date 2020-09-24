@@ -16,9 +16,8 @@ const exportFromDatabaseToCsv = (startPoint, fileName) => {
         const runningTask = await getRunningTask();
         console.log(runningTask);
         if (!runningTask) { 
-          console.log("Export ended");
           await destroyExportFile();
-          resolve("export ended");
+          resolve("Export terminated");
         }
         takeTime(3e9);
         const data = await getNthInSortedUser(i);
@@ -57,10 +56,12 @@ const stopExport = () => {
       }
     })
 }
+
 const takeTime = (limit) => {
   let i = 0;
   while(i++<limit){} 
 }
+
 const createExportFile =  () => {
   return new Promise((resolve, reject) => {
     fs.writeFile('data.csv', ' ', (err) => {

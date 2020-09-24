@@ -48,6 +48,7 @@ const endPausedTask = async () => {
   }
   throw new Error("No Paused Task");
 }
+
 const getPausedTask = async () => {
   if(await exists(task)) {
     const status = Number(await get(task));
