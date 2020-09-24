@@ -50,7 +50,6 @@ router.get('/export/start', async (req, res, next) => {
     try {
         const msg = await startExport();
         if(msg === "Export Done") {
-            console.log("Goes here again");
             res.status(200)
             res.sendFile(`${__dirname}/data.csv`);
         } else{ 

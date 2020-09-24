@@ -6,8 +6,11 @@ const mongoose = require('mongoose');
 const { MONGO_URI } = require('./constants/urls');
 const { router } = require('./routes');
 
-mongoose.connect("mongodb://mongo:27017/atlan").then(() => {
-    console.log("Connected Successfuly");
+mongoose.connect(MONGO_URI,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log(`Connected to mongo successfully using ${MONGO_URI}`);
 });
 const db = mongoose.connection;
 

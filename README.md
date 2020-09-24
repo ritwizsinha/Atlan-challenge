@@ -14,6 +14,7 @@ This is a internship task for a Backend Developer Internship where the task give
 
 ## Things to do
 - Find a better method to rollback changes in the database on stop upload process. Currently mongo transactions are not being used because of them being available only on replica sets. 
+- Improve the error and message logging system to make the API more robust as currently it  just states whether the task happened or not
 
 ## Structure
 
@@ -48,6 +49,8 @@ This is a internship task for a Backend Developer Internship where the task give
 
 - As this is only a test for uploads resume/pause/stop etc, the upload is currently specified as a get request and doing a request starts uploading the file 'test.csv' present on server to the database. This way its easier to test on the browser itself. 
 - For time lag a while loop is run with  some big number for some syncronous delay
+- There is a continous data log to the console which is sent to the database
+- An expected error "No running task found" error is thrown when task is paused or stoped as no running task exist 
 - GET 
   - /upload/start : Starts the upload of the 'test.csv' to the database
   - /upload/pause : Pauses the upload of 'test.csv'
@@ -55,3 +58,9 @@ This is a internship task for a Backend Developer Internship where the task give
   - /upload/stop  : Stops the upload of 'test.csv'
   - /export/start : Starts export from the server
   - /export/stop  : Stops the export from the server
+
+## Running
+
+To run this locally 
+docker and docker-compose is required
+1. docker-compose up

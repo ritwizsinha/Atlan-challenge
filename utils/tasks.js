@@ -3,8 +3,8 @@ const redis = require('redis');
 
 const { taskState } = require('../constants/states');
 
-// const REDIS_PORT = process.env.PORT || 6379;
-const redis_client = redis.createClient(process.env.REDIS_URL);
+const REDIS_URL = process.env.REDIS_URL ? process.env.REDIS_URL : 6379;
+const redis_client = redis.createClient(REDIS_URL)
 redis_client.on("error", function(error) {
     console.error(error);
 });
@@ -77,7 +77,6 @@ const pauseRunningTask = async () => {
       return;
     }
   }
-  throw new Error("No running task exists");
 }
 
 const addTask = async () => {

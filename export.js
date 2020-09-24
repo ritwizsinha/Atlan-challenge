@@ -19,7 +19,7 @@ const exportFromDatabaseToCsv = (startPoint, fileName) => {
           await destroyExportFile();
           resolve("Export terminated");
         }
-        takeTime(1e9);
+        // takeTime(1e9);
         const data = await getNthInSortedUser(i);
         await incrementTaskRowCount();
         new ObjectsToCsv([data[0].object]).toDisk(`${__dirname}/${fileName}`, {append: true});

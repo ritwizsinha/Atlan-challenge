@@ -6,7 +6,6 @@ const { getRunningTask, endRunningTask, endPausedTask, getPausedTask,
 const {addUser, rollbackNAddedUsers} = require('./utils/users');
 
 const addPipedCsvToDatabase = (skipLinesCount, file) => {
-        console.log("CSV FUNCTION CALLED");
         return new Promise(async (resolve, reject) => {
                 const readStream = fs.createReadStream(`${__dirname}/${file}`, 'utf-8');
                 try {
@@ -18,7 +17,7 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
                                         if (counter <= skipLinesCount) continue;
                                         const runningTask = await getRunningTask();
                                         if (runningTask) {
-                                                timeTakingLoop(1e9);    
+                                                // timeTakingLoop(1e9);    
                                                 await addUser(row, runningTask);
                                         }
                                         else {
@@ -63,8 +62,7 @@ const pauseUpload = () => {
 const resumeTheUpload = () => {
         return new Promise(async(resolve, reject) => {
                 try {
-                        const rowCount = await getSkipLinesCount();
-                        console.log("RowCount: ", rowCount);
+                        const rowCount = Number(await getSkipLinesCount());
                         await runPausedTask();
                         const msg = await addPipedCsvToDatabase(rowCount, 'test.csv');
                         resolve(msg);
