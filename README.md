@@ -13,10 +13,10 @@ This is a internship task for a Backend Developer Internship where the task give
 - [x] Allow for stop action on export 
 
 ## Things to do
-- [x] Find a better method to rollback changes in the database on stop upload process. Currently mongo transactions are not being used because of them being available only on replica sets. 
+- Find a better method to rollback changes in the database on stop upload process. Currently mongo transactions are not being used because of them being available only on replica sets. 
 
 ## Structure
 
-- [x] MongoDB used as a sample database for storing users. 
-- [x] Redis used to store the task state . A task is defined as initiation of an upload/export process and it ends when the upload/export is complete or is terminated.
-- [x] CSV is created and read using objects-to-csv and neat-csv
+- MongoDB used as a sample database for storing users. 
+- Redis used to store the task state . A task is defined as initiation of an upload/export process and it ends when the upload/export is complete or is terminated.
+- CSV is created and read using objects-to-csv and neat-csv
