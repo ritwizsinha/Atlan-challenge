@@ -18,7 +18,7 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
                                         if (counter <= skipLinesCount) continue;
                                         const runningTask = await getRunningTask();
                                         if (runningTask) {
-                                                timeTakingLoop(3e9);    
+                                                timeTakingLoop(1e9);    
                                                 await addUser(row, runningTask);
                                         }
                                         else {

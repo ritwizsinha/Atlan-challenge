@@ -46,7 +46,8 @@ This is a internship task for a Backend Developer Internship where the task give
 
 ## API
 
-- As this is only a test for uploads resume/pause/stop etc, the upload is currently specified as a get request and doing a request starts uploading the file 'test.csv' present on server to the database
+- As this is only a test for uploads resume/pause/stop etc, the upload is currently specified as a get request and doing a request starts uploading the file 'test.csv' present on server to the database. This way its easier to test on the browser itself. 
+- For time lag a while loop is run with  some big number for some syncronous delay
 - GET 
   - /upload/start : Starts the upload of the 'test.csv' to the database
   - /upload/pause : Pauses the upload of 'test.csv'
