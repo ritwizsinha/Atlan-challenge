@@ -48,7 +48,7 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
 const addTaskAndStartUpload = () => {
         return new Promise(async (resolve, reject) => {
                 try {
-                        if(await taskPresent()) reject(SIMUL_TASK_NOT_ALLOWED);
+                        if(await taskPresent()) throw new Error(SIMUL_TASK_NOT_ALLOWED);
                         await addTask(action.UPLOAD);
                         const {msg} = await addPipedCsvToDatabase(0, 'test.csv')
                         resolve({

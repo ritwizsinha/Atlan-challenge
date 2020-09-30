@@ -8,7 +8,7 @@ const NO_RUNNING_TASK = "No running task";
 const NO_PAUSED_TASK = "No Paused Task";
 const UPLOAD_FINISHED = "Upload finished Successfully";
 const TASK_PAUSED_SUCCESSFULLY = "Task paused successfully";
-const TASK_STOPPED_SUCCESSFULLY = "Task ended successfully";
+const TASK_STOPPED_SUCCESSFULLY = "Task stopped successfully";
 
 module.exports = {
   SIMUL_TASK_NOT_ALLOWED,
