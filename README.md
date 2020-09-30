@@ -7,14 +7,15 @@ Atlan is a data democratization company that helps teams collaborate frictionles
 This is a internship task for a Backend Developer Internship where the task given is to build a solution for enabling interrupts like pause and resume actions while uploading and exporting huge documents. Here a csv file with more than million docs is taken as a file example. The following features have been implemented.
 
 ## Features
+- [x] Allow for start action on upload/export
 - [x] Allow for pause action on upload
 - [x] Allow for resume action on upload
 - [x] Allow for stop action on upload
-- [x] Allow for stop action on export 
+- [x] Allow for stop action on export
 
 ## Things to do
 - Find a better method to rollback changes in the database on stop upload process. Currently mongo transactions are not being used because of them being available only on replica sets. 
-- Improve the error and message logging system to make the API more robust as currently it  just states whether the task happened or not
+- Provide multiple uploads and exports at the same time.
 
 ## Structure
 
@@ -37,13 +38,13 @@ This is a internship task for a Backend Developer Internship where the task give
 - When the task is ended (represented as absence of that task)
 - Everytime we upload a document to the database we check the state of task. If it is RUNNING, we continue the process, if it is paused then it exits. 
 - When the task is resumed it goes from PAUSED to RUNNING state and the document upload starts again. 
-- If the task is terminated then the document uploads of current have to be rolled back. 
+- If the task is terminated then the document uploads of current task have to be rolled back. 
 
 ## Implementation
-- As the task variable is accessed multiple times it was better to store it in cache than in the database. Thus redis was used for storing the task. Along with task another variable rowCount is stored in cache which is further used to rollback changes to the database whenever the uploads are terminated. 
+- As the task variable is accessed multiple times it was better to store it in cache than in the database. Thus redis was used for storing the task. Along with task RowCount and Action variable are also stored in cache which is further used to rollback changes to the database whenever the uploads are terminated and identify the kind of task running upload/export respectively.  
 - For uploading of csv each row of CSV is taken one by one and uploaded to database. 
 - For exporting each row is taken from database and added to a csv which is sent to the user.
-- For rolling back changes. X operations are made where to delete the last X entries from the database. Here X is the rowCount stored in cache. A transaction might be a better solution to this but was not supported in mongoose without replica sets. 
+- For rolling back changes if X operations are made we have to delete the last X entries from the database. Here X is the rowCount stored in cache. A transaction might be a better solution to this but was not supported in mongoose without replica sets. 
 
 ## API
 
@@ -56,8 +57,8 @@ This is a internship task for a Backend Developer Internship where the task give
   - /upload/pause : Pauses the upload of 'test.csv'
   - /upload/resume: Resumes the upload of 'test.csv'
   - /upload/stop  : Stops the upload of 'test.csv'
-  - /export/start : Starts export from the server
-  - /export/stop  : Stops the export from the server
+  - /export/start : Starts export from the database and starts saving data.csv on the server
+  - /export/stop  : Stops the export from the database and deletes data.csv on the server. 
 
 ## Running
 
