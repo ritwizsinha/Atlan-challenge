@@ -3,7 +3,11 @@ const taskState = {
     PAUSED: 1,
     ENDED: 2,
 }
-
+const action = {
+    UPLOAD: "upload",
+    EXPORT: "export"
+}
 module.exports = {
-    taskState
+    taskState,
+    action
 }

@@ -24,7 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(router);
 app.use((err,req,res,next)=>{
-    console.error(err)
     res.status(500)
 	res.send({err:err.message})
 })

@@ -1,9 +1,11 @@
 const fs = require('fs');
-
 const neatCsv = require('neat-csv');
+
 const { getRunningTask, endRunningTask, endPausedTask, getPausedTask,
-        runPausedTask, pauseRunningTask, addTask, getSkipLinesCount} = require('./utils/tasks');
-const {addUser, rollbackNAddedUsers} = require('./utils/users');
+        runPausedTask, pauseRunningTask, addTask, getSkipLinesCount, taskPresent } = require('./utils/tasks');
+const { addUser, rollbackNAddedUsers } = require('./utils/users');
+const { action } = require('./constants/states');
+const { SIMUL_TASK_NOT_ALLOWED, NO_PAUSED_TASK, UPLOAD_FINISHED, TASK_PAUSED_SUCCESSFULLY, TASK_STOPPED_SUCCESSFULLY } = require("./constants/messages");
 
 const addPipedCsvToDatabase = (skipLinesCount, file) => {
         return new Promise(async (resolve, reject) => {
@@ -15,21 +17,28 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
                                 for (const row of data) {
                                         counter++;
                                         if (counter <= skipLinesCount) continue;
-                                        const runningTask = await getRunningTask();
-                                        if (runningTask) {
-                                                // timeTakingLoop(1e9);    
-                                                await addUser(row, runningTask);
-                                        }
-                                        else {
-                                                const pausedTask = await getPausedTask();
-                                                if (pausedTask) 
-                                                        resolve("Paused");
-                                                reject("Invalid task state in start");
-                                        }
+                                        try {
+                                                const runningTask = await getRunningTask(action.UPLOAD);
+                                                if (runningTask) {
+                                                        console.log(runningTask);
+                                                        timeTakingLoop(1e9);    
+                                                     await addUser(row, runningTask); 
+                                                }
+                                                else {
+                                                        const pausedTask = await getPausedTask(action.UPLOAD);
+                                                        if (pausedTask) 
+                                                                resolve({
+                                                                        msg: TASK_PAUSED_SUCCESSFULLY
+                                                                });
+                                                        reject("Invalid task state in start");
+                                                }
+                                        } catch(e) {}
                                 }
                         }
-                        await endRunningTask();
-                        resolve("Done completely");
+                        const msg = await endRunningTask(action.UPLOAD);
+                        resolve({
+                                msg: UPLOAD_FINISHED
+                        });
                 } catch(err) {
                         reject(err);
                 }
@@ -39,9 +48,12 @@ const addPipedCsvToDatabase = (skipLinesCount, file) => {
 const addTaskAndStartUpload = () => {
         return new Promise(async (resolve, reject) => {
                 try {
-                        await addTask();
-                        const msg = await addPipedCsvToDatabase(0, 'test.csv')
-                        resolve(msg);
+                        if(await taskPresent()) reject(SIMUL_TASK_NOT_ALLOWED);
+                        await addTask(action.UPLOAD);
+                        const {msg} = await addPipedCsvToDatabase(0, 'test.csv')
+                        resolve({
+                                msg
+                        });
                 } catch(e) {
                         reject(e);
                 }
@@ -51,8 +63,10 @@ const addTaskAndStartUpload = () => {
 const pauseUpload = () => {
         return new Promise(async (resolve, reject) => {
                 try {
-                        await pauseRunningTask();
-                        resolve("Paused");
+                        await pauseRunningTask(action.UPLOAD);
+                        resolve({
+                                msg: TASK_PAUSED_SUCCESSFULLY
+                        });
                 } catch(err) {
                         reject(err);
                 }
@@ -63,9 +77,11 @@ const resumeTheUpload = () => {
         return new Promise(async(resolve, reject) => {
                 try {
                         const rowCount = Number(await getSkipLinesCount());
-                        await runPausedTask();
-                        const msg = await addPipedCsvToDatabase(rowCount, 'test.csv');
-                        resolve(msg);
+                        await runPausedTask(action.UPLOAD);
+                        const {msg} = await addPipedCsvToDatabase(rowCount, 'test.csv');
+                        resolve({
+                                msg
+                        });
                 } catch(err) {
                         reject(err);
                 } 
@@ -78,10 +94,14 @@ const stopPausedTask = () => {
                         const rowCount = Number(await getSkipLinesCount());
                         if (rowCount) {
                                 await rollbackNAddedUsers(rowCount);
-                                await endPausedTask();
-                                resolve("Task stopped successfully");
+                                await endPausedTask(action.UPLOAD);
+                                resolve({
+                                        msg: TASK_STOPPED_SUCCESSFULLY
+                                });
                         } 
-                        reject("No paused task found");
+                        reject({
+                                msg:NO_PAUSED_TASK
+                        });
                 } catch(err) {
                         reject(err);
                 }
